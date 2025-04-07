@@ -5,11 +5,11 @@ import numpy as np
 import networkx as nx
 import folium
 from folium.plugins import HeatMap
-import plotly.graph_objects as go
+# import plotly.graph_objects as go
 from recommendation import recommend_properties_with_scores
 
 import plotly.express as px
-import plotly.utils
+# import plotly.utils
 import base64
 import json
 import seaborn as sns
@@ -342,64 +342,6 @@ def geospatial_price_heatmap():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
-
-@app.route('/sankey_chart', methods=['GET'])
-def sunburst_chart():
-    try:
-        # Load the data
-        new_df = pd.read_csv('data/data3.csv')
-
-        # Ensure 'price' column exists and handle missing values
-        if 'price' not in new_df.columns:
-            return jsonify({'status': 'error', 'message': "'price' column not found in the dataset."})
-
-        new_df['price'] = new_df['price'].fillna(0) * 100  # Convert to Lakhs if needed
-
-        # Define price bins with an upper bound to capture all values
-        price_bins = [0, 50, 100, 300, new_df['price'].max() + 1]
-        price_labels = ['₹0-50L', '₹50L-1Cr', '₹1Cr-3Cr', '₹3Cr+']
-
-        # Categorize price ranges
-        new_df['price_range'] = pd.cut(
-            new_df['price'],
-            bins=price_bins,
-            labels=price_labels,
-            right=False,
-            include_lowest=True
-        )
-
-        # Explicitly set categories to avoid "Cannot setitem" error
-        new_df['price_range'] = new_df['price_range'].cat.set_categories(price_labels)
-
-        # Ensure required columns exist
-        required_columns = ['property_type', 'luxury_category', 'furnishing_type', 'price_range']
-        missing_columns = [col for col in required_columns if col not in new_df.columns]
-        if missing_columns:
-            return jsonify({'status': 'error', 'message': f"Missing columns: {', '.join(missing_columns)}"})
-
-        # Select relevant columns
-        df_filtered = new_df[required_columns]
-
-        # Create Sunburst chart
-        fig = px.sunburst(
-            df_filtered,
-            path=['property_type', 'luxury_category', 'furnishing_type', 'price_range'],
-            values=None,  # Auto-distributes counts
-            color='price_range',
-            color_discrete_sequence=px.colors.qualitative.Pastel
-        )
-
-        # Update layout for better visualization
-        fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
-
-        # Return the chart as JSON
-        return jsonify({'status': 'success', 'plot': fig.to_json()})
-    except FileNotFoundError:
-        return jsonify({'status': 'error', 'message': "The file 'data/data3.csv' was not found."})
-    except pd.errors.EmptyDataError:
-        return jsonify({'status': 'error', 'message': "The file 'data/data3.csv' is empty."})
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)})
 
 
 # 3️⃣ **Box Plot of Price Per Sqft Across Sectors**
