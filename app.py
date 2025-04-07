@@ -30,22 +30,32 @@ with open("PickleFile/df.pkl", "rb") as file:
 
 import os
 import pickle
-import gdown
+import requests
 
+# Directory to store the downloaded model
 MODEL_DIR = "PickleFile"
 MODEL_PATH = os.path.join(MODEL_DIR, "pipeline.pkl")
 
-if not os.path.exists(MODEL_PATH):
-    try:
-        os.makedirs(MODEL_DIR, exist_ok=True)
-        print("Downloading model from Google Drive...")
-        gdown.download("https://drive.google.com/uc?id=1rZutyaCB6vA4roZ4qo1iabmYphzqkQVA", MODEL_PATH, fuzzy=True)
-    except Exception as e:
-        print(f"Download failed: {e}")
-        raise RuntimeError("Model download failed. Please check access or download manually.")
+# Modified Dropbox link for direct download
+DROPBOX_URL = "https://www.dropbox.com/scl/fi/a8f4u80ii291z139in1z9/pipeline.pkl?rlkey=btn3qsv37f3vzkmcbu1oni02c&st=auoieh52&dl=1"
 
+# Step 1: Download the file only if it doesn't exist
+if not os.path.exists(MODEL_PATH):
+    os.makedirs(MODEL_DIR, exist_ok=True)
+    print("Downloading model from Dropbox...")
+    response = requests.get(DROPBOX_URL)
+    if response.status_code == 200:
+        with open(MODEL_PATH, "wb") as f:
+            f.write(response.content)
+        print("✅ Model downloaded successfully.")
+    else:
+        raise Exception(f"❌ Download failed with status code: {response.status_code}")
+
+# Step 2: Load the model using pickle
 with open(MODEL_PATH, "rb") as file:
     pipeline = pickle.load(file)
+    print("✅ Model loaded successfully.")
+
 
 
 with open("PickleFile/location_distance.pkl", "rb") as file:
