@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Analytics Dashboard</h1>
+    
+    <h2>Sector Price per Sqft Geomap</h2>
+    <div id="geoplot"></div>
+    
+    <h2>Features Wordcloud</h2>
+    <img id="wordcloud" alt="Word Cloud" width="500">
+    
+    <h2>Area vs Price</h2>
+    <select id="propertyType" onchange="loadAreaVsPrice()">
+        <option value="flat">Flat</option>
+        <option value="house">House</option>
+    </select>
+    <div id="areaVsPrice"></div>
+    
+    <h2>BHK Pie Chart</h2>
+    <select id="sector" onchange="loadBhkPieChart()">
+        <option value="overall">Overall</option>
+    </select>
+    <div id="bhkPieChart"></div>
+    
+    <h2>Side by Side BHK Price Comparison</h2>
+    <div id="bhkBoxplot"></div>
+    
+    <h2>Side by Side Property Type Distribution</h2>
+    <img id="propertyDist" alt="Distribution" width="500">
+    
+    <script>
+        async function fetchJSON(url) {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log(`Data from ${url}:`, data); // Debugging line
+                return data;
+            } catch (error) {
+                console.error(`Error fetching data from ${url}:`, error);
+                return null;
+            }
+        }
+        
+        async function loadPlots() {
+            let geoplotData = await fetchJSON('/geoplot');
+            if (geoplotData && geoplotData.plot) {
+                Plotly.newPlot('geoplot', JSON.parse(geoplotData.plot));
+            }
+        
+            let wordcloudData = await fetchJSON('/wordcloud');
+            if (wordcloudData && wordcloudData.image) {
+                document.getElementById('wordcloud').src = 'data:image/png;base64,' + wordcloudData.image;
+            }
+        
+            let bhkBoxplotData = await fetchJSON('/bhk_boxplot');
+            if (bhkBoxplotData && bhkBoxplotData.plot) {
+                Plotly.newPlot('bhkBoxplot', JSON.parse(bhkBoxplotData.plot));
+            }
+        
+            let propertyDistData = await fetchJSON('/property_type_distplot');
+            if (propertyDistData && propertyDistData.image) {
+                document.getElementById('propertyDist').src = 'data:image/png;base64,' + propertyDistData.image;
+            }
+        }
+        
+        async function loadAreaVsPrice() {
+            let type = document.getElementById('propertyType').value;
+            let areaVsPriceData = await fetchJSON(`/area_vs_price?property_type=${type}`);
+            if (areaVsPriceData && areaVsPriceData.plot) {
+                Plotly.newPlot('areaVsPrice', JSON.parse(areaVsPriceData.plot));
+            }
+        }
+        
+        async function loadBhkPieChart() {
+            let sector = document.getElementById('sector').value;
+            let bhkPieChartData = await fetchJSON(`/bhk_pie_chart?sector=${sector}`);
+            if (bhkPieChartData && bhkPieChartData.plot) {
+                Plotly.newPlot('bhkPieChart', JSON.parse(bhkPieChartData.plot));
+            }
+        }
+        
+        window.onload = function() {
+            loadPlots();
+            loadAreaVsPrice();
+            loadBhkPieChart();
+        };
+        
+    </script>
+</body>
+</html>

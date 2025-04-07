@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<title>FindFlat in Gurugram</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
+	<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+	<!-- Google Fonts -->
+		<!-- <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"> -->
+		<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+		<!-- CSS Files (Updated to Flask Static Path) -->
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
+		<link rel="stylesheet" href='{{ url_for("static", filename="css/aos.css") }}'>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons.min.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.timepicker.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+		</head>
+		
+		
+  </head>
+  <body>
+    
+	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+	    <div class="container">
+	      <a class="navbar-brand" href="index.html">Gurugram Housing</a>
+	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+	        <span class="oi oi-menu"></span> Menu
+	      </button>
+
+	      <div class="collapse navbar-collapse" id="ftco-nav">
+	        <ul class="navbar-nav ml-auto">
+	          <li class="nav-item active"><a href="" class="nav-link">Home</a></li>
+	          <li class="nav-item"><a href="#recommendation-section" class="nav-link">Recommendation</a></li>
+	          <li class="nav-item"><a href="#analytics-section" class="nav-link">Analytics Module</a></li>
+	          <li class="nav-item"><a href="#" class="nav-link">Insight Data</a></li>
+	        </ul>
+	      </div>
+	    </div>
+	  </nav>
+    <!-- END nav -->
+    
+	<div class="hero-wrap" style="background-image: url('{{ url_for("static", filename="images/bg_2.jpg") }}')" data-stellar-background-ratio="0.5">
+		<!-- <img src="{{ url_for('static', filename='images/bg_2.jpg') }}" alt="Image"> -->
+      <div class="overlay"></div>
+      <div class="overlay-2"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text justify-content-center align-items-center">
+          <div class="col-lg-8 col-md-6 ftco-animate d-flex align-items-end">
+          	<div class="text text-center w-100">
+	            <h1 class="mb-4">Find True Value of<br>Your Home Before Buy or Sell!</h1>
+	            <!-- <p><a href="#" class="btn btn-primary py-3 px-4"><span class="ftco-section ftco-no-pb">Search and Predict Prices</span></a></p> -->
+				<!-- <div class="mouse">
+				<a href="#" class="btn btn-primary py-3 px-4">
+					<div class="mouse-wheel"><span class="ftco-section ftco-no-pb"></span></div>
+				</a>
+			</div> -->
+			<p>
+				<a href="#search-section" class="btn btn-primary py-3 px-4">
+					<span>Search and Predict Prices</span>
+				</a>
+			</p>
+            </div>
+          </div> 
+        </div>
+      </div>
+      <div class="mouse">
+				<a href="#analytics-section" class="mouse-icon">
+					<div class="mouse-wheel"><span class="ion-ios-arrow-round-down"></span></div>
+				</a>
+			</div>
+    </div>
+
+    
+	<section id="search-section" class="ftco-section ftco-no-pb">
+		<div class="container">
+			<div class="section-title">
+				<h2>Price Prediction</h2>
+				<h3>Smart Property Price Estimation <span>in Gurugram</span></h3>
+				<p>Get accurate property price predictions using our advanced <span>machine learning model</span>. Enter your property details below to get started.</p>			
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="search-wrap-1 ftco-animate">
+						<form id="searchForm">
+
+							<!-- Row 1 -->
+						<div class="row">
+							<div class="col-md-3 col-lg-3">
+								<div class="form-group">
+									<label for="property_type">Property Type</label>
+									<select id="property_type" class="form-control">
+										<option value="flat">Flat</option>
+										<option value="house">House</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="col-md-3 col-lg-3">
+								<div class="form-group">
+									<label for="sector">Sector</label>
+									<select id="sector" class="form-control">
+										<option value="">Select Sector</option>
+										{% for sector in sectors %}
+										<option value="{{ sector }}">{{ sector }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+
+							<div class="col-md-3 col-lg-3">
+								<div class="form-group">
+									<label for="bedrooms">Bedrooms</label>
+									<input type="number" id="bedrooms" class="form-control" min="1" max="100">
+								</div>
+							</div>
+
+							<div class="col-md-3 col-lg-3">
+								<div class="form-group">
+									<label for="bathroom">Bathrooms</label>
+									<input type="number" id="bathroom" class="form-control" min="1" max="100">
+								</div>
+							</div>
+						</div>
+
+							<!-- Row 2 -->
+							<div class="row">
+								<!-- Balconies -->
+								<div class="col-md-3 col-lg-3">
+									<div class="form-group">
+										<label for="balcony">Balconies</label>
+										<select id="balcony" class="form-control">
+											<option value="">No. of</option>
+											{% for balcony in balconies %}
+												<option value="{{ balcony }}">{{ balcony }}</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							
+	
+								<div class="col-md-3 col-lg-3">
+									<div class="form-group">
+										<label for="property_age">Property Age</label>
+										<select id="property_age" class="form-control">
+											<option value="Moderately Old">Moderately Old</option>
+											<option value="New Property">New Property</option>
+											<option value="Old Property">Old Property</option>
+											<option value="Relatively New">Relatively New</option>
+											<option value="Under Construction">Under Construction</option>
+										</select>
+									</div>
+								</div>
+								
+	
+								<div class="col-md-3 col-lg-3">
+									<div class="form-group">
+										<label for="built_up_area">Built-Up Area (sq ft)</label>
+										<input type="number" id="built_up_area" class="form-control" min="200" max="100000">
+									</div>
+								</div>
+	
+								<div class="col-md-3 col-lg-3">
+									<div class="form-group">
+										<label for="servant_room">Servant Room</label>
+										<select id="servant_room" class="form-control">
+											<option value="0">No</option>
+											<option value="1">Yes</option>
+										</select>
+									</div>
+								</div>
+							</div>
+	
+							<!-- Row 3 -->
+							<div class="row">
+								<div class="col-md-3 col-lg-3">
+									<div class="form-group">
+										<label for="store_room">Store Room</label>
+										<select id="store_room" class="form-control">
+											<option value="0">No</option>
+											<option value="1">Yes</option>
+										</select>
+									</div>
+								</div>
+	
+								<div class="col-md-3 col-lg-3">
+									<div class="form-group">
+										<label for="furnishing_type">Furnishing Type</label>
+										<select id="furnishing_type" class="form-control">
+											<option value="unfurnished">Unfurnished</option>
+											<option value="semifurnished">Semi-Furnished</option>
+											<option value="furnished">Fully-Furnished</option>
+										</select>
+									</div>
+								</div>
+	
+								<div class="col-md-3 col-lg-3">
+									<div class="form-group">
+										<label for="luxury_category">Luxury Category</label>
+										<select id="luxury_category" class="form-control">
+											<option value="Low">Standard</option>
+											<option value="Medium">Luxury</option>
+											<option value="High">Ultra Luxury</option>
+										</select>
+									</div>
+								</div>
+	
+								<div class="col-md-3 col-lg-3">
+									<div class="form-group">
+										<label for="floor_category">Floor Category</label>
+										<select id="floor_category" class="form-control">
+											<option value="Low Floor">Low Floor</option>
+											<option value="Mid Floor">Mid Floor</option>
+											<option value="High Floor">High Floor</option>
+										</select>
+									</div>
+								</div>
+							</div>
+	
+							<!-- Search Button -->
+							
+							<!-- Search Button -->
+							<div class="col-md-3 col-lg-3 align-self-end">
+								<div class="form-group">
+									<input type="submit" value="Search & Predict" class="form-control btn btn-primary" 
+										style="display: block; margin: 0 auto; width: 80%; max-width: 400px;" onclick="showResult()">
+
+								</div>
+							</div>
+
+							
+							</div>
+	
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+<!-- Result Box (Initially Hidden) -->
+ 
+<div id="result-container">
+	<span id="result"></span>
+</div>
+
+
+
+<section id="search-section" class="ftco-section ftco-no-pb">
+    <div class="container">
+		<div class="container">
+			<div class="section-title", id="recommendation-section">
+				<h2>Recommendations</h2>
+				<h3>Discover Apartments with <span>AI-Powered Recommendations</span></h3>
+				<p>Find the best apartments in <span>Gurugram</span> based on your preferences. Enter your <span>location</span> and <span>search radius</span> to get started.</p>
+			</div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="search-wrap-1 ftco-animate">
+                    <form id="searchForm">
+                        <!-- Row 1 -->
+						 
+                        <div class="row align-items-end">
+							<div class="col-md-4 col-lg-4">
+								<div class="form-group">
+									<label for="location">Pick a Location to Find Apartments in Gurugram</label>
+									<select id="location" class="form-control">
+										<option value="">Select Location</option>
+										{% for loc in location %}
+											<option value="{{ loc }}">{{ loc }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+						
+							<div class="col-md-4 col-lg-4">
+								<div class="form-group">
+									<label for="radius">Enter Search Radius (km)</label>
+									<input type="number" value="100" id="radius" class="form-control" step="2">
+								</div>
+							</div>
+						
+							<div class="col-md-4 col-lg-4 text-right">
+								<div class="form-group">
+									<button type="button" onclick="filterApartments()" 
+									class="btn btn-primary py-3 px-4" 
+									style="font-size: 18px !important;">
+									Get Nearby Apartments in Gurugram
+								</button>
+								</div>
+							</div>							
+						</div>
+					</div>
+                        <!-- DATA HERE -->
+						<div class="section-title">
+							<h4>Apartments Near<span> Your Location</span> </h4>
+						</div>
+						<div class="table-container" id="table-container" style="display: none;">
+							<table id="apartment-table">
+								<thead>
+									<tr>
+										<th>Apartments</th>
+										<th>Distance</th>
+									</tr>
+								</thead>
+								<tbody id="apartment-table-body"></tbody>
+							</table>
+						</div>
+						
+						
+
+                        <div class="section-title">
+							<div class="row align-items-center">
+								
+								<!-- Text Column -->
+								<div class="col-md-4 mb-3">
+									<p>
+										Select an <span>apartment</span> to get top 5 <span>recommendations</span> based on 
+										<span>location</span>, <span>price</span>, and your preferred <span>facilities</span>.
+									</p>
+								</div>
+						
+								<!-- Dropdown Column -->
+								<div class="col-md-4 mb-3">
+									<label for="apartment" class="form-label">Select Available <span>Apartments</span></label>
+									<select id="apartment" class="form-control">
+										<option value="">Select</option>
+									</select>
+								</div>
+						
+								<!-- Button Column -->
+								<div class="col-md-4 mb-3 d-flex justify-content-md-end">
+									<button type="button" onclick="getRecommendations()" 
+										class="btn btn-primary py-3 px-4" style="font-size: 18px;">
+										Get Similar Recommendations
+									</button>
+								</div>
+						
+							</div>
+						</div>
+						
+
+                    <div class="section-title">
+					<h4>Top five Similar <span>Apartments</span></h4></div>
+					<div class="table-container" id="recommendation-container" style="display: none;">
+						<table id="recommendation-table">
+							<thead>
+								<tr>
+									<th>Property Name</th>
+									<th>Similarity Score</th>
+									<th>Distance (km)</th>
+								</tr>
+							</thead>
+							<tbody id="recommendation-table-body"></tbody>
+						</table>
+					</div>
+					
+					
+                    
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>	
+	</div>
+</section>
+
+
+<section id="search-section" class="ftco-section ftco-no-pb">
+	<div class="container">
+		<div class="container">
+			<div class="section-title", id = "analytics-section">
+				<h2>Analytics Dashboard</h2>
+				<h3>Visualize Real Estate Trends <span>with Smart Analytics</span></h3>
+				<p>Explore our interactive dashboard to uncover real estate trends in <span>Gurugram</span>. Click the tabs to view different <span>visualizations</span> and use the buttons to toggle graph descriptions. Make informed <span>property decisions</span> with the power of <span>data</span>.</p>
+			</div> 
+
+
+	<!-- <h2>Sector Price per Sqft Geomap</h2> -->
+	<div class="container mx-auto mt-5">
+		<!-- Scrollable Navigation Bar -->
+		<div class="overflow-x-auto border-b-2 border-gray-300">
+			<ul class="inline-flex gap-6 border-b-3 border-[#E6E9EB]">
+				<li class="tab active cursor-pointer py-3.25 text-base font-semibold" data-graph="geoplot">Geo Plot</li>
+				
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="area_vs_price">Area vs Price</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="price_boxplot">Price Boxplot</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="bhk_pie_chart">BHK Pie Chart</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="avgprice"> Avg Price</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="importance">Feature Importance</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="furnshied">Furnishing Price</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="bhk_boxplot">BHK Box Plot</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="property_type_distplot" data-image="true">Property Type Distplot</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="wordcloud" data-image="true">Word Cloud</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="heatmap">Heatmap</li>
+				<li class="tab cursor-pointer py-3.25 text-base font-semibold" data-graph="sankey_chart" >Sandkey Map</li>
+				
+			</ul>
+			
+		</div>
+
+</section>
+<div id="graph-container">
+	<div id="loading" class="hidden text-center"></div>
+	<div id="graph"></div>
+</div>
+
+<!-- Button RIGHT BELOW the graph container -->
+<button id="toggle-description-btn" class="inline-button" type="button">
+	Show Description
+</button>
+
+
+<!-- Description -->
+<div id="graph-description" class="mt-3 text-gray-800 text-base hidden"></div>
+	
+	<style>
+		.inline-button {
+			background: #fff;
+			border: none;
+			color: #d4ca68;
+			cursor: pointer;
+			font-size: inherit;
+			font-family: inherit;
+			font-weight: inherit;
+			transition: color 0.3s;
+			text-align: center;
+			display: block;
+			margin: 0 auto;
+			margin-top: -10px; /* Adjusted to create spacing at the bottom of the graph box */
+			font-size: 16px;
+			font-weight: 500;
+			letter-spacing: 0.5px;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+		}
+
+		.inline-button:active {
+			color: rgb(195, 255, 0);
+		}
+	</style>
+	
+	<!-- Button BELOW the description -->
+	<!-- <button id="toggle-description-btn" class="inline-button">
+		Show Description
+	</button> -->
+	<script>
+		const graphDescriptions = {
+			"geoplot": "This plot visualizes the spatial distribution of properties across Gurugram on an interactive map. Each marker represents an individual property, plotted based on its latitude and longitude. The color gradient reflects property prices — darker shades indicate higher prices (e.g., Sector 26), while lighter shades show lower prices (e.g., Manesar).\n\nUsers can easily spot premium areas like those near Delhi compared to more affordable sectors like Sector 37C or Sector 104. The map also highlights proximity to key features such as major roads, metro stations, and commercial hubs.\n\nThis visualization supports smarter decisions by helping users analyze locality trends and price distributions across Gurugram.",
+			"area_vs_price": "This scatter plot illustrates the relationship between built-up area and property price in Gurugram. It also factors in the number of bedrooms, providing deeper insight into how property size and configuration affect pricing.\n\nThe graph reveals a generally linear trend—properties with smaller areas (e.g., under 100 sq. ft. with 1 bedroom) start at around ₹30 lakh, while larger properties (e.g., 12,000 sq. ft.) reach up to ₹13 crore. To maintain accuracy and reduce skewness, extremely high-priced outliers have been removed.\n\nThis visualization helps users understand how area and room count contribute to pricing across different property segments.",
+			"bhk_pie_chart": "This pie chart illustrates the distribution of properties based on the number of bedrooms (BHK) across Gurugram. It shows that around 43% of the listings are 3 BHKs, 25% are 2 BHKs, and 19% are 4 BHKs, while the remaining include configurations up to 10 BHK.\n\nThis visualization helps users understand the availability of different property types in the region and which BHK configurations are most common—providing valuable insight into what type of property one is more likely to find easily in Delhi-Gurugram real estate.",
+			"bhk_boxplot": "This box plot visualizes the price distribution across different BHK categories, highlighting minimum, maximum, and median prices for each. For 1 BHK properties, prices range from ₹17 Lakh to ₹5.5 Cr, with a median of ₹51 Lakh. 2 BHKs show a range from ₹58 Lakh to ₹9.9 Cr, with a median around ₹90 Lakh to ₹1 Cr.\n\n3 BHKs span from ₹35 Lakh to ₹13 Cr, with a median of ₹1.6 Cr. 4 BHK properties range from ₹40 Lakh to ₹25 Cr, and have a median price of ₹3 Cr. This visualization helps users compare pricing trends and market variation by bedroom category.",
+			"property_type_distplot": "This distribution plot compares property types—primarily Flats and Houses—based on price and frequency. While Flats dominate in count, typically ranging in price from lower to mid segments, Houses exhibit a much broader price spectrum, reaching up to ₹30 Cr.\n\nThis is expected, as Houses come with land ownership, adding substantial value. The plot helps users understand the pricing dynamics and availability between different property types in Gurugram’s real estate market.",
+			"wordcloud": "This word cloud highlights the most frequently mentioned features in property listings across Gurugram. Common keywords include 'Vaastu', 'Water Storage', 'Parking', 'Alarm', 'Lift', 'Gym', and 'Fire Extinguisher'—indicating the amenities buyers often look for while evaluating properties.\n\nThese words are extracted from flat and sector-based features, showcasing what sellers emphasize and what buyers prioritize, such as power backup, intercom, parks, and piped gas. The visualization provides a quick overview of popular preferences and essential facilities in demand.",
+			"geospatial_price_heatmap": "This heatmap visualizes property prices across Gurugram using color intensity—darker regions indicate higher price per sqft, while lighter areas reflect more affordable zones. Premium localities like Sector 25, 26, and 27 near the Delhi border show high property values. In contrast, newer and budget-friendly sectors such as Manesar, or areas closer to the UP border, appear lighter.\n\nIf you're looking for luxury investments, the darker zones highlight high-demand neighborhoods. On the other hand, lighter regions like Sector 4, 9, or 10 suggest ideal options for affordable housing or long-term growth opportunities.",
+			"sankey_chart": "Sankey chart showing flow of property types and their respective prices. The chart illustrates how different property types (e.g., Flats, Houses) are distributed across various price ranges.\n\nFor instance, the majority of Flats fall within the ₹50 Lakh to ₹1 Cr range, while Houses are more evenly spread across higher price brackets. This visualization helps users understand the relationship between property types and their pricing, making it easier to identify market trends and investment opportunities.",
+			"price_boxplot": "This is one of the most insightful and visually detailed plots, showcasing the distribution of price per square foot (psqft) across all sectors in Gurugram. The boxplot displays the minimum, median, and maximum values for each sector, making it easy to compare price ranges.\n\nFor example, in Sector 48, the psqft ranges from ₹5.5K (min) to ₹38K (max), with a median around ₹20K. Outliers, as well as the upper and lower fences, are clearly highlighted to reflect extreme values or premium listings.\n\nUsers can hover over or click on each sector’s box to explore detailed price data. This plot offers a quick yet powerful way to understand the pricing landscape of different localities.",
+			"avgprice": "This bar plot provides a simplified yet effective view of the average property prices across various sectors or categories in Gurugram. Unlike the detailed price per square foot boxplot, this visualization focuses solely on the average price, making it easier to interpret at a glance.\n\nEach bar represents the average price of properties in a given sector, allowing users to quickly identify high-value or budget-friendly areas. For instance, Sector 26 shows one of the highest price per square foot averages at ₹31K, while Sector 37 displays more affordable rates.\n\nWith its clear layout and interactive features like hover-to-read, this plot is ideal for users who want a straightforward understanding of property pricing trends by location.",
+			"importance": "This plot reflects the concept of explainable AI by showcasing feature importance in predicting property prices. It highlights how different attributes contribute to the pricing model. Built-up area stands out with the highest correlation (0.67), making it the most influential factor.\n\nOther important features include sector, property type, and number of bathrooms. This visualization presents the top 10 features used in prediction, offering clear insights into which aspects matter most in pricing. It's a key part of the insights module, aiding users and decision-makers in understanding what drives property value.",
+			"furnshied": "This plot highlights how different furnishing types—fully furnished, semi-furnished, and unfurnished—affect property prices in Gurugram. On average, fully furnished properties command the highest price at ₹3.9 Cr, followed by semi-furnished properties at ₹3.3 Cr, while unfurnished properties are relatively more affordable, averaging around ₹2.1 Cr.\n\nThis visualization is crucial for both buyers and investors as it emphasizes the premium associated with ready-to-move-in homes that come with built-in amenities. It helps users make smarter decisions based on their budget and furnishing preferences. For instance, if a buyer is looking for a more cost-effective property and is open to customizing interiors later, they might consider unfurnished options. On the other hand, those prioritizing convenience may opt for fully furnished properties despite the higher cost."
+		};
+	
+		let currentGraph = "geoplot";
+	
+		// When tab is clicked
+document.querySelectorAll('.tab').forEach(tab => {
+	tab.addEventListener('click', function () {
+		currentGraph = this.getAttribute('data-graph');
+
+		const descDiv = document.getElementById('graph-description');
+		descDiv.classList.add('hidden');
+		descDiv.innerText = "";
+
+		// 🔽 REMOVE the style class when switching tabs
+		descDiv.classList.remove('description-style');
+
+		document.getElementById('toggle-description-btn').innerText = 'Show Description';
+	});
+});
+
+// Toggle button logic
+document.getElementById('toggle-description-btn').addEventListener('click', function () {
+	const descDiv = document.getElementById('graph-description');
+	const button = this;
+
+	if (descDiv.classList.contains('hidden')) {
+		// Show description
+		const desc = graphDescriptions[currentGraph] || "No description available.";
+		descDiv.innerText = desc;
+		descDiv.classList.remove('hidden');
+
+		// 🔽 ADD the CSS style when shown
+		descDiv.classList.add('description-style');
+
+		button.innerText = "Hide Description";
+	} else {
+		// Hide description
+		descDiv.classList.add('hidden');
+		descDiv.innerText = "";
+
+		// 🔽 REMOVE the style when hidden
+		descDiv.classList.remove('description-style');
+
+		button.innerText = "Show Description";
+	}
+});
+	</script>
+		
+	
+
+
+
+
+
+
+
+    
+
+    <footer class="ftco-footer ftco-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Gurugram Housing</h2>
+              <p>Property details from 99acres.com may change. Verify availability and prices before making decisions.</p>
+              <ul class="ftco-footer-social list-unstyled mt-5">
+                <li class="ftco-animate"><a href="https://x.com/singhsourav0" target="_blank"><span class="icon-twitter"></span></a></li>
+				<li class="ftco-animate"><a href="https://github.com/singhsourav0" target="_blank"><span class="icon-github"></span></a></li>
+				<li class="ftco-animate"><a href="https://instagram.com/singhsourav0" target="_blank"><span class="icon-instagram"></span></a></li>
+
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4 ml-md-4">
+              <h2 class="ftco-heading-2">Services Offered</h2>
+              <ul class="list-unstyled">
+                <li><a href="#recommendation-section"><span class="icon-long-arrow-right mr-2"></span>Get Recommendation</a></li>
+                <li><a href="#analytics-section"><span class="icon-long-arrow-right mr-2"></span>Insights(Future)</a></li>
+                <li><a href="#analytics-section"><span class="icon-long-arrow-right mr-2"></span>Property Analytics</a></li>
+                <li><a href="#search-section"><span class="icon-long-arrow-right mr-2"></span>Predict Prices</a></li>
+              </ul>
+            </div>
+          </div>
+          
+    
+          <div class="col-md">
+			<div class="ftco-footer-widget mb-4">
+			  <h2 class="ftco-heading-2">About</h2>
+			  <ul class="list-unstyled">
+				<li><a href="https://singhsourav0.github.io/House_price/"><span class="icon-info-circle mr-2"></span> Project Detailed</a></li>
+				<li><a href="https://www.99acres.com/Delhi-Real-Estate.htm"><span class="icon-database mr-2"></span> Data Source</a></li>
+				<li><a href="https://iamsourav.xyz/"><span class="icon-user mr-2"></span> Developer Profile</a></li>
+				<li><a href="https://github.com/singhsourav0/House_price"><span class="icon-github mr-2"></span> Source Code</a></li>
+			  </ul>
+			</div>
+		  
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+            	<h2 class="ftco-heading-2">Want to connect ?</h2>
+            	<div class="block-23 mb-3">
+	              <ul>
+	                <li><span class="icon icon-map-marker"></span><span class="text">BPMCE Bihar India</span></li>
+	                <li><a href="tel:+916205208204"><span class="icon icon-phone"></span><span class="text">+916205208204</span></a></li>
+	                <li><a href="mailto:souravkumar8432@gmail.com"><span class="icon icon-envelope pr-4"></span><span class="text">souravkumar8432@gmail.com</span></a></li>
+	              </ul>
+	            </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center">
+	
+            <p>Copyright &copy; <script>document.write(new Date().getFullYear());</script> 
+				All rights reserved | Made with ❤️ by 
+				<strong><a href="https://iamsourav.xyz" target="_blank" style="color: #f4f8f8;">Sourav Kumar</a></strong>
+				</p>
+				
+          </div>
+        </div>
+      </div>
+    </footer>
+    
+	<script>
+		$(document).ready(function () {
+			$("#searchForm").submit(function (event) {
+			event.preventDefault();
+			$("#result").text("Search results will be displayed here.");  
+
+			var formData = {
+				property_type: $("#property_type").val(),
+				sector: $("#sector").val(),
+				bedroom: $("#bedrooms").val(),
+				bathroom: $("#bathroom").val(),
+				balcony: $("#balcony").val(),
+				property_age: $("#property_age").val(),
+				built_up_area: $("#built_up_area").val(),
+				servant_room: $("#servant_room").val(),
+				store_room: $("#store_room").val(),
+				furnishing_type: $("#furnishing_type").val(),
+				luxury_category: $("#luxury_category").val(),
+				floor_category: $("#floor_category").val()
+			};
+	
+			console.log("Sending data:", formData); // ✅ Debugging line
+	
+			$.ajax({
+				type: "POST",
+				url: "/predict", 
+				data: formData,
+				success: function (response) {
+					console.log("Response:", response);  // ✅ Debugging line
+	
+					if (response.prediction) {
+						$("#result").html(response.prediction).css("color", "green");
+					} else {
+						$("#result").html("Error: " + response.error).css("color", "red");
+					}
+				},
+				error: function (xhr, status, error) {
+					console.log("AJAX Error:", error);  // ✅ Debugging line
+					$("#result").html("No input, no response! Type something.").css("color", "red");
+				}
+			});
+		});
+	});
+  // END PREDICTION -->
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabs = document.querySelectorAll(".tab");
+    const graphContainer = document.getElementById("graph");
+    const loading = document.getElementById("loading");
+
+    async function fetchGraph(graphType, isImage = false) {
+        try {
+            loading.classList.remove("hidden");
+            graphContainer.innerHTML = ""; // Clear previous content
+
+            let response = await fetch(`/${graphType}`);
+            let data = await response.json();
+
+            if (data.status === "success") {
+                if (isImage) {
+                    // Render Image Graph (e.g., WordCloud, DistPlot)
+                    graphContainer.innerHTML = `<img src="data:image/png;base64,${data.image}" class="graph-image" />`;
+                } else if (graphType === "heatmap") {
+                    // 🔥 Handle Folium-based Heatmap (HTML content)
+                    graphContainer.innerHTML = data.map;
+                } else {
+                    // Render Plotly Graph
+                    let plotData = JSON.parse(data.plot);
+
+                    // 🔥 Special layout adjustments for GeoPlots & Heatmap
+                    if (graphType === "geoplot") {
+                        plotData.layout.autosize = true;
+                        plotData.layout.margin = { l: 10, r: 10, t: 10, b: 10 };
+                        plotData.layout.geo = {
+                            projection: { type: "natural earth" },
+                            showcoastlines: true,
+                            showland: true,
+                            fitbounds: "locations"
+                        };
+                    }
+
+                    // Render Plotly Graph
+                    Plotly.newPlot("graph", plotData.data, plotData.layout, {
+                        displayModeBar: false,
+                        responsive: true
+                    });
+                }
+            } else {
+                graphContainer.innerHTML = `<p class="error-text">${data.message}</p>`;
+            }
+        } catch (error) {
+            console.error("Fetch error:", error);
+            graphContainer.innerHTML = `<p class="error-text">Error loading graph.</p>`;
+        } finally {
+            loading.classList.add("hidden");
+        }
+    }
+
+    // Load default graph on page load
+    fetchGraph("geoplot");
+
+    // Add event listeners to tabs
+    tabs.forEach(tab => {
+        tab.addEventListener("click", function () {
+            tabs.forEach(t => t.classList.remove("active"));
+            this.classList.add("active");
+
+            const graphType = this.dataset.graph;
+            const isImage = this.dataset.image === "true";
+            fetchGraph(graphType, isImage);
+        });
+    });
+});
+
+	</script>
+	
+	
+
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+
+  
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery-migrate-3.0.1.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.easing.1.3.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.waypoints.min.js') }}"></script> 
+	<script src="{{ url_for('static', filename='js/jquery.stellar.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/aos.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.animateNumber.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap-datepicker.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.timepicker.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/scrollax.min.js') }}"></script>
+
+	<!-- Google Maps (Keep External Link As Is) -->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+
+	<script src="{{ url_for('static', filename='js/google-map.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
+
+  </body>
+</html>
