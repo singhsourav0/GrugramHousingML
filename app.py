@@ -25,28 +25,27 @@ with open("PickleFile/df.pkl", "rb") as file:
     df = pickle.load(file)
 # with open("PickleFile/pipeline.pkl", "rb") as file:
 #     pipeline = pickle.load(file)
+# with open("PickleFile/pipeline.pkl", "rb") as file:
+#     pipeline = pickle.load(file)
+
 import os
+import pickle
 import gdown
 
-# Path where the model will be stored
 MODEL_DIR = "PickleFile"
 MODEL_PATH = os.path.join(MODEL_DIR, "pipeline.pkl")
 
-# Google Drive file ID
-FILE_ID = "1rZutyaCB6vA4roZ4qo1iabmYphzqkQVA"
-DOWNLOAD_URL = f"https://drive.google.com/uc?id={FILE_ID}"
-
-# Step 1: Download model from Google Drive only once
 if not os.path.exists(MODEL_PATH):
-    os.makedirs(MODEL_DIR, exist_ok=True)
-    print("Downloading model from Google Drive...")
-    gdown.download(DOWNLOAD_URL, MODEL_PATH, quiet=False, fuzzy=True)
+    try:
+        os.makedirs(MODEL_DIR, exist_ok=True)
+        print("Downloading model from Google Drive...")
+        gdown.download("https://drive.google.com/uc?id=1rZutyaCB6vA4roZ4qo1iabmYphzqkQVA", MODEL_PATH, fuzzy=True)
+    except Exception as e:
+        print(f"Download failed: {e}")
+        raise RuntimeError("Model download failed. Please check access or download manually.")
 
-# Step 2: Load the model
 with open(MODEL_PATH, "rb") as file:
     pipeline = pickle.load(file)
-# with open("PickleFile/pipeline.pkl", "rb") as file:
-#     pipeline = pickle.load(file)
 
 
 with open("PickleFile/location_distance.pkl", "rb") as file:
