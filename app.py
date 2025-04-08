@@ -5,9 +5,9 @@ import numpy as np
 import networkx as nx
 import folium
 from folium.plugins import HeatMap
-# import plotly.graph_objects as go
+import plotly.graph_objects as go
 from recommendation import recommend_properties_with_scores
-
+import joblib
 import plotly.express as px
 # import plotly.utils
 import base64
@@ -16,7 +16,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from io import BytesIO
 from wordcloud import WordCloud
-
+import zlib
 
 
 app = Flask(__name__)
@@ -28,33 +28,40 @@ with open("PickleFile/df.pkl", "rb") as file:
 # with open("PickleFile/pipeline.pkl", "rb") as file:
 #     pipeline = pickle.load(file)
 
-import os
-import pickle
-import requests
 
-# Directory to store the downloaded model
-MODEL_DIR = "PickleFile"
-MODEL_PATH = os.path.join(MODEL_DIR, "pipeline.pkl")
+try:
+    with open('PickleFile/pipeline2.pkl', "rb") as file:
+        pipeline = joblib.load(file)
+except zlib.error as e:
+    raise RuntimeError("The pipeline file is corrupted or improperly compressed. Please re-save it using joblib with compression.") from e
 
-# Modified Dropbox link for direct download
-DROPBOX_URL = "https://www.dropbox.com/scl/fi/a8f4u80ii291z139in1z9/pipeline.pkl?rlkey=btn3qsv37f3vzkmcbu1oni02c&st=auoieh52&dl=1"
+# import os
+# import pickle
+# import requests
 
-# Step 1: Download the file only if it doesn't exist
-if not os.path.exists(MODEL_PATH):
-    os.makedirs(MODEL_DIR, exist_ok=True)
-    print("Downloading model from Dropbox...")
-    response = requests.get(DROPBOX_URL)
-    if response.status_code == 200:
-        with open(MODEL_PATH, "wb") as f:
-            f.write(response.content)
-        print("✅ Model downloaded successfully.")
-    else:
-        raise Exception(f"❌ Download failed with status code: {response.status_code}")
+# # Directory to store the downloaded model
+# MODEL_DIR = "PickleFile"
+# MODEL_PATH = os.path.join(MODEL_DIR, "pipeline.pkl")
 
-# Step 2: Load the model using pickle
-with open(MODEL_PATH, "rb") as file:
-    pipeline = pickle.load(file)
-    print("✅ Model loaded successfully.")
+# # Modified Dropbox link for direct download
+# DROPBOX_URL = "https://www.dropbox.com/scl/fi/a8f4u80ii291z139in1z9/pipeline.pkl?rlkey=btn3qsv37f3vzkmcbu1oni02c&st=auoieh52&dl=1"
+
+# # Step 1: Download the file only if it doesn't exist
+# if not os.path.exists(MODEL_PATH):
+#     os.makedirs(MODEL_DIR, exist_ok=True)
+#     print("Downloading model from Dropbox...")
+#     response = requests.get(DROPBOX_URL)
+#     if response.status_code == 200:
+#         with open(MODEL_PATH, "wb") as f:
+#             f.write(response.content)
+#         print("✅ Model downloaded successfully.")
+#     else:
+#         raise Exception(f"❌ Download failed with status code: {response.status_code}")
+
+# # Step 2: Load the model using pickle
+# with open(MODEL_PATH, "rb") as file:
+#     pipeline = pickle.load(file)
+#     print("✅ Model loaded successfully.")
 
 
 
