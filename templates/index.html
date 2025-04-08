@@ -638,75 +638,88 @@ document.getElementById('toggle-description-btn').addEventListener('click', func
 	});
   // END PREDICTION -->
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const tabs = document.querySelectorAll(".tab");
-    const graphContainer = document.getElementById("graph");
-    const loading = document.getElementById("loading");
-
-    async function fetchGraph(graphType, isImage = false) {
-        try {
-            loading.classList.remove("hidden");
-            graphContainer.innerHTML = ""; // Clear previous content
-
-            let response = await fetch(`/${graphType}`);
-            let data = await response.json();
-
-            if (data.status === "success") {
-                if (isImage) {
-                    // Render Image Graph (e.g., WordCloud, DistPlot)
-                    graphContainer.innerHTML = `<img src="data:image/png;base64,${data.image}" class="graph-image" />`;
-                } else if (graphType === "heatmap") {
-                    // 🔥 Handle Folium-based Heatmap (HTML content)
-                    graphContainer.innerHTML = data.map;
-                } else {
-                    // Render Plotly Graph
-                    let plotData = JSON.parse(data.plot);
-
-                    // 🔥 Special layout adjustments for GeoPlots & Heatmap
-                    if (graphType === "geoplot") {
-                        plotData.layout.autosize = true;
-                        plotData.layout.margin = { l: 10, r: 10, t: 10, b: 10 };
-                        plotData.layout.geo = {
-                            projection: { type: "natural earth" },
-                            showcoastlines: true,
-                            showland: true,
-                            fitbounds: "locations"
-                        };
-                    }
-
-                    // Render Plotly Graph
-                    Plotly.newPlot("graph", plotData.data, plotData.layout, {
-                        displayModeBar: false,
-                        responsive: true
-                    });
-                }
-            } else {
-                graphContainer.innerHTML = `<p class="error-text">${data.message}</p>`;
-            }
-        } catch (error) {
-            console.error("Fetch error:", error);
-            graphContainer.innerHTML = `<p class="error-text">Error loading graph.</p>`;
-        } finally {
-            loading.classList.add("hidden");
-        }
-    }
-
-    // Load default graph on page load
-    fetchGraph("geoplot");
-
-    // Add event listeners to tabs
-    tabs.forEach(tab => {
-        tab.addEventListener("click", function () {
-            tabs.forEach(t => t.classList.remove("active"));
-            this.classList.add("active");
-
-            const graphType = this.dataset.graph;
-            const isImage = this.dataset.image === "true";
-            fetchGraph(graphType, isImage);
-        });
-    });
-});
-
+	document.addEventListener("DOMContentLoaded", function () {
+		const tabs = document.querySelectorAll(".tab");
+		const graphContainer = document.getElementById("graph");
+		const loading = document.getElementById("loading");
+	
+		async function fetchGraph(graphType, isImage = false) {
+			// Case: If it's a static image, show image directly from /static/
+			if (isImage) {
+				loading.classList.remove("hidden");
+				graphContainer.innerHTML = "";
+	
+				const img = document.createElement("img");
+				img.src = `/static/${graphType}.png`;
+				img.alt = graphType;
+				img.classList.add("mx-auto", "max-w-full", "rounded-lg", "shadow");
+	
+				// Simulate brief loading (optional)
+				setTimeout(() => {
+					graphContainer.appendChild(img);
+					loading.classList.add("hidden");
+				}, 300);
+	
+				return; // 🚫 Stop here — don't fetch from backend
+			}
+	
+			// Otherwise, load dynamic graph from Flask backend
+			try {
+				loading.classList.remove("hidden");
+				graphContainer.innerHTML = "";
+	
+				const response = await fetch(`/${graphType}`);
+				const data = await response.json();
+	
+				if (data.status === "success") {
+					if (graphType === "heatmap") {
+						graphContainer.innerHTML = data.map;
+					} else {
+						const plotData = JSON.parse(data.plot);
+	
+						if (graphType === "geoplot") {
+							plotData.layout.autosize = true;
+							plotData.layout.margin = { l: 10, r: 10, t: 10, b: 10 };
+							plotData.layout.geo = {
+								projection: { type: "natural earth" },
+								showcoastlines: true,
+								showland: true,
+								fitbounds: "locations"
+							};
+						}
+	
+						Plotly.newPlot("graph", plotData.data, plotData.layout, {
+							displayModeBar: false,
+							responsive: true
+						});
+					}
+				} else {
+					graphContainer.innerHTML = `<p class="text-red-500">${data.message}</p>`;
+				}
+			} catch (err) {
+				console.error("Fetch Error:", err);
+				graphContainer.innerHTML = `<p class="text-red-500">Error loading graph.</p>`;
+			} finally {
+				loading.classList.add("hidden");
+			}
+		}
+	
+		// Default graph load
+		fetchGraph("geoplot");
+	
+		// Tab click handlers
+		tabs.forEach(tab => {
+			tab.addEventListener("click", function () {
+				tabs.forEach(t => t.classList.remove("active"));
+				this.classList.add("active");
+	
+				const graphType = this.dataset.graph;
+				const isImage = this.dataset.image === "true";
+	
+				fetchGraph(graphType, isImage);
+			});
+		});
+	});
 	</script>
 	
 	

@@ -2,21 +2,15 @@ from flask import Flask, render_template, request, jsonify
 import pickle
 import pandas as pd
 import numpy as np
-import networkx as nx
 import folium
 from folium.plugins import HeatMap
-import plotly.graph_objects as go
 from recommendation import recommend_properties_with_scores
 import joblib
 import plotly.express as px
 # import plotly.utils
-import base64
-import json
-import seaborn as sns
-import matplotlib.pyplot as plt
-from io import BytesIO
-from wordcloud import WordCloud
 import zlib
+import matplotlib
+matplotlib.use('Agg')  # Use non-GUI backend suitable for web apps
 
 
 app = Flask(__name__)
@@ -70,8 +64,8 @@ with open("PickleFile/location_distance.pkl", "rb") as file:
 
 new_df = pd.read_csv('data/data_viz1.csv')
 # feature_text = pickle.load(open('data/feature_text.pkl', 'rb'))
-with open("data/feature_text.pkl", "rb") as file:
-    feature_text = pickle.load(file)
+# with open("data/feature_text.pkl", "rb") as file:
+#     feature_text = pickle.load(file)
 
 @app.route("/")
 def home():
@@ -292,37 +286,30 @@ def bhk_boxplot():
         return jsonify({'status': 'error', 'message': str(e)})
 
 
-@app.route('/wordcloud', methods=['GET'])
-def wordcloud():
-    try:
-        wordcloud = WordCloud(width=800, height=800, background_color='black', min_font_size=10).generate(feature_text)
-        img = BytesIO()
-        plt.figure(figsize=(8, 8))
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis("off")
-        plt.savefig(img, format='png')
-        img.seek(0)
-        return jsonify({'status': 'success', 'image': base64.b64encode(img.getvalue()).decode()})
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)})
+# from flask import send_from_directory
+
+# @app.route('/wordcloud', methods=['GET'])
+# def show_wordcloud():
+#     try:
+#         return send_from_directory('static', 'wordcloud.png')
+#     except Exception as e:
+#         return jsonify({'status': 'error', 'message': str(e)})
 
 
-@app.route('/property_type_distplot', methods=['GET'])
-def property_type_distplot():
-    try:
-        img = BytesIO()
-        plt.figure(figsize=(10, 4))
-        sns.histplot(new_df[new_df['property_type'] == 'house']['price'], kde=True, label='house')
-        sns.histplot(new_df[new_df['property_type'] == 'flat']['price'], kde=True, label='flat')
-        plt.legend()
-        plt.savefig(img, format='png')
-        plt.close()
-        img.seek(0)
-        return jsonify({'status': 'success', 'image': base64.b64encode(img.getvalue()).decode()})
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)})
-
-
+# @app.route('/property_type_distplot', methods=['GET'])
+# def property_type_distplot():
+#     try:
+#         img = BytesIO()
+#         plt.figure(figsize=(10, 4))
+#         sns.histplot(new_df[new_df['property_type'] == 'house']['price'], kde=True, label='house')
+#         sns.histplot(new_df[new_df['property_type'] == 'flat']['price'], kde=True, label='flat')
+#         plt.legend()
+#         plt.savefig(img, format='png')
+#         plt.close()
+#         img.seek(0)
+#         return jsonify({'status': 'success', 'image': base64.b64encode(img.getvalue()).decode()})
+#     except Exception as e:
+#         return jsonify({'status': 'error', 'message': str(e)})
 
 
 
