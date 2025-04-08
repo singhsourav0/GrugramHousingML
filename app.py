@@ -12,8 +12,12 @@ import zlib
 import matplotlib
 matplotlib.use('Agg')  # Use non-GUI backend suitable for web apps
 
+from flask_caching import Cache
 
+# Initialize Flask app and cache
 app = Flask(__name__)
+cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})  # Cache timeout in seconds
+
 # Load Data and Model
 with open("PickleFile/df.pkl", "rb") as file:
     df = pickle.load(file)
@@ -29,33 +33,6 @@ try:
 except zlib.error as e:
     raise RuntimeError("The pipeline file is corrupted or improperly compressed. Please re-save it using joblib with compression.") from e
 
-# import os
-# import pickle
-# import requests
-
-# # Directory to store the downloaded model
-# MODEL_DIR = "PickleFile"
-# MODEL_PATH = os.path.join(MODEL_DIR, "pipeline.pkl")
-
-# # Modified Dropbox link for direct download
-# DROPBOX_URL = "https://www.dropbox.com/scl/fi/a8f4u80ii291z139in1z9/pipeline.pkl?rlkey=btn3qsv37f3vzkmcbu1oni02c&st=auoieh52&dl=1"
-
-# # Step 1: Download the file only if it doesn't exist
-# if not os.path.exists(MODEL_PATH):
-#     os.makedirs(MODEL_DIR, exist_ok=True)
-#     print("Downloading model from Dropbox...")
-#     response = requests.get(DROPBOX_URL)
-#     if response.status_code == 200:
-#         with open(MODEL_PATH, "wb") as f:
-#             f.write(response.content)
-#         print("✅ Model downloaded successfully.")
-#     else:
-#         raise Exception(f"❌ Download failed with status code: {response.status_code}")
-
-# # Step 2: Load the model using pickle
-# with open(MODEL_PATH, "rb") as file:
-#     pipeline = pickle.load(file)
-#     print("✅ Model loaded successfully.")
 
 
 
@@ -193,8 +170,8 @@ def get_recommendation_results():
 
 try:
     new_df = pd.read_csv('data/data_viz1.csv')
-    with open("data/feature_text.pkl", "rb") as file:
-        feature_text = pickle.load(file)
+    # with open("data/feature_text.pkl", "rb") as file:
+    #     feature_text = pickle.load(file)
 except Exception as e:
     print(f"Error loading data: {e}")
     new_df = pd.DataFrame()
@@ -208,6 +185,7 @@ group_df = new_df.groupby('sector', as_index=True)[['price', 'price_per_sqft', '
 
 
 @app.route('/geoplot', methods=['GET'])
+@cache.cached()
 def geoplot():
     try:
         fig = px.scatter_mapbox(
@@ -216,25 +194,24 @@ def geoplot():
             hover_name=group_df.index
         )
 
-        # Modify color bar title to be vertical
         fig.update_layout(
-     coloraxis_colorbar=dict(
-        title="Price per Sqft",  
-        title_side="right",  # Keep the title vertical on the right
-        thickness=5,  # Make colorbar thinner
-        x=0.97,  # Shift color bar closer to the right edge (default is ~1.0)
-        len=0.75  # Reduce height if needed
-    ),
-    margin=dict(l=10, r=10, t=50, b=50)
-)
+            coloraxis_colorbar=dict(
+                title="Price per Sqft",
+                title_side="right",
+                thickness=5,
+                x=0.97,
+                len=0.75
+            ),
+            margin=dict(l=10, r=10, t=50, b=50)
+        )
 
-        graphJSON = fig.to_json()  # Convert plot to JSON
-        return jsonify({'status': 'success', 'plot': graphJSON})  # Send properly formatted JSON
-
+        graphJSON = fig.to_json()
+        return jsonify({'status': 'success', 'plot': graphJSON})
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}) 
+        return jsonify({'status': 'error', 'message': str(e)})
 
 @app.route('/area_vs_price', methods=['GET'])
+@cache.cached()
 def area_vs_price():
     property_type = request.args.get('property_type', 'flat')
     try:
@@ -242,29 +219,27 @@ def area_vs_price():
         fig = px.scatter(df_filtered, x="built_up_area", y="price", color="bedRoom")
         fig.update_layout(
             margin=dict(l=20, r=20, t=50, b=20),
-            title_x=0.5  # Center the title
+            title_x=0.5
         )
         return jsonify({'status': 'success', 'plot': fig.to_json()})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
-
-
 @app.route('/bhk_pie_chart', methods=['GET'])
+@cache.cached()
 def bhk_pie_chart():
     sector = request.args.get('sector', 'overall')
     try:
         df_filtered = new_df if sector == "overall" else new_df[new_df['sector'] == sector].copy()
-        # print(df_filtered.head())
-        fig = fig = px.pie(df_filtered, names='bedRoom', title='Total Bill Amount by Day')
+        fig = px.pie(df_filtered, names='bedRoom', title='Total Bill Amount by Day')
         return jsonify({'status': 'success', 'plot': fig.to_json()})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
 
 
-
 @app.route('/bhk_boxplot', methods=['GET'])
+@cache.cached()
 def bhk_boxplot():
     try:
         fig = px.box(
@@ -286,30 +261,6 @@ def bhk_boxplot():
         return jsonify({'status': 'error', 'message': str(e)})
 
 
-# from flask import send_from_directory
-
-# @app.route('/wordcloud', methods=['GET'])
-# def show_wordcloud():
-#     try:
-#         return send_from_directory('static', 'wordcloud.png')
-#     except Exception as e:
-#         return jsonify({'status': 'error', 'message': str(e)})
-
-
-# @app.route('/property_type_distplot', methods=['GET'])
-# def property_type_distplot():
-#     try:
-#         img = BytesIO()
-#         plt.figure(figsize=(10, 4))
-#         sns.histplot(new_df[new_df['property_type'] == 'house']['price'], kde=True, label='house')
-#         sns.histplot(new_df[new_df['property_type'] == 'flat']['price'], kde=True, label='flat')
-#         plt.legend()
-#         plt.savefig(img, format='png')
-#         plt.close()
-#         img.seek(0)
-#         return jsonify({'status': 'success', 'image': base64.b64encode(img.getvalue()).decode()})
-#     except Exception as e:
-#         return jsonify({'status': 'error', 'message': str(e)})
 
 
 
@@ -318,6 +269,7 @@ def get_filtered_data(sector):
     return df if sector == "overall" else new_df[new_df['sector'] == sector].copy()
 
 @app.route('/heatmap', methods=['GET'])
+@cache.cached()
 def geospatial_price_heatmap():
     sector = request.args.get('sector', 'overall')
     try:
@@ -340,6 +292,7 @@ def geospatial_price_heatmap():
 
 # 3️⃣ **Box Plot of Price Per Sqft Across Sectors**
 @app.route('/price_boxplot', methods=['GET'])
+@cache.cached()
 def price_boxplot():
     try:
         fig = px.box(
@@ -362,6 +315,7 @@ def price_boxplot():
 
 
 @app.route('/avgprice', methods=['GET'])
+@cache.cached()
 def avgprice():
     try:
         if new_df.empty or 'sector' not in new_df.columns or 'price_per_sqft' not in new_df.columns:
@@ -390,6 +344,7 @@ def avgprice():
 
 
 @app.route('/importance', methods=['GET'])
+@cache.cached()
 def feature_importance():
     try:
         # Get feature names from the preprocessor
@@ -418,8 +373,11 @@ def feature_importance():
             autosize=True,
             margin=dict(l=40, r=40, t=60, b=40),
             title_x=0.5,
-            yaxis=dict(showticklabels=False)  # 👈 Hide Y-axis labels
+            
+            yaxis=dict(showticklabels=True)  # 👈 Hide Y-axis labels
         )
+        #save image 
+        # fig.write_image("static/feature_importance.png")
 
         return jsonify({'status': 'success', 'plot': fig.to_json()})
     except Exception as e:
@@ -427,6 +385,7 @@ def feature_importance():
 
 
 @app.route('/furnshied', methods=['GET'])
+@cache.cached()
 def furnshied():
     try:
         # Map numeric codes to meaningful labels
